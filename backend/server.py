@@ -54,7 +54,9 @@ if not DAYTONA_API_KEY:
     daytona_client = None
 else:
     try:
-        daytona_client = Daytona(api_key=DAYTONA_API_KEY)
+        # Set environment variable for Daytona SDK
+        os.environ['DAYTONA_API_KEY'] = DAYTONA_API_KEY
+        daytona_client = Daytona()
         logging.info("Daytona client initialized successfully")
     except Exception as e:
         logging.error(f"Failed to initialize Daytona client: {e}")
