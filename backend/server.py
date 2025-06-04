@@ -164,28 +164,62 @@ async def execute_code(request: CodeExecutionRequest):
         raise HTTPException(status_code=500, detail=error_message)
 
 async def execute_code_simulation(code: str):
-    """Simple code simulation for demo purposes"""
+    """Execute Python code safely using exec"""
     try:
-        # Simple simulation for demo purposes
-        if "print" in code:
-            # Extract print statements and simulate output
-            lines = code.split('\n')
-            output_lines = []
-            for line in lines:
-                if line.strip().startswith('print'):
-                    # Simple extraction of print content
-                    import re
-                    match = re.search(r'print\((.*?)\)', line)
-                    if match:
-                        content = match.group(1).strip('"\'')
-                        output_lines.append(content)
+        import io
+        import sys
+        from contextlib import redirect_stdout, redirect_stderr
+        
+        # Create string buffers to capture output
+        stdout_buffer = io.StringIO()
+        stderr_buffer = io.StringIO()
+        
+        # Capture both stdout and stderr
+        try:
+            with redirect_stdout(stdout_buffer), redirect_stderr(stderr_buffer):
+                # Create a safe namespace for execution
+                namespace = {
+                    '__builtins__': {
+                        'print': print,
+                        'len': len,
+                        'str': str,
+                        'int': int,
+                        'float': float,
+                        'list': list,
+                        'dict': dict,
+                        'range': range,
+                        'sum': sum,
+                        'min': min,
+                        'max': max,
+                        'abs': abs,
+                        'round': round,
+                        'enumerate': enumerate,
+                        'zip': zip,
+                        'sorted': sorted,
+                        'reversed': reversed,
+                        'type': type,
+                        'isinstance': isinstance,
+                    }
+                }
+                
+                # Execute the code
+                exec(code, namespace)
+                
+            stdout_output = stdout_buffer.getvalue()
+            stderr_output = stderr_buffer.getvalue()
             
-            return {"output": '\n'.join(output_lines), "error": None}
-        else:
-            return {"output": "Code executed successfully (no output)", "error": None}
+            if stderr_output:
+                return {"output": stdout_output, "error": stderr_output}
+            else:
+                return {"output": stdout_output or "Code executed successfully (no output)", "error": None}
+                
+        except SyntaxError as e:
+            return {"output": "", "error": f"SyntaxError: {str(e)}"}
+        except Exception as e:
+            return {"output": "", "error": f"RuntimeError: {str(e)}"}
             
     except Exception as e:
-        return {"output": "", "error": str(e)}
+        return {"output": "", "error": f"ExecutionError: {str(e)}"}
 
 async def execute_python_code_daytona(code: str):
     """Execute Python code using Daytona sandbox"""
