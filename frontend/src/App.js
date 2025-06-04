@@ -250,11 +250,13 @@ function App() {
 
   const handleRunCode = async () => {
     setIsLoading(true);
-    setOutput('');
+    setOutput(''); // Clear previous output
     
     try {
       const code = getCurrentFileContent();
       const language = getCurrentFileLanguage();
+      
+      console.log('Executing code:', { code: code.substring(0, 100), language }); // Debug log
       
       // For JavaScript, we can run it in the browser
       if (language === 'javascript') {
@@ -277,12 +279,18 @@ function App() {
             logs.push(`Return value: ${result}`);
           }
           
-          setOutput(logs.length > 0 ? logs.join('\n') : 'Code executed successfully (no output)');
+          const output = logs.length > 0 ? logs.join('\n') : 'Code executed successfully (no output)';
+          console.log('JavaScript output:', output); // Debug log
+          setOutput(output);
         } catch (error) {
-          setOutput(`JavaScript Error: ${error.message}`);
+          const errorOutput = `JavaScript Error: ${error.message}`;
+          console.log('JavaScript error:', errorOutput); // Debug log
+          setOutput(errorOutput);
         }
       } else {
-        // For other languages, use Daytona API
+        // For other languages, use backend API
+        console.log('Calling backend API for', language); // Debug log
+        
         const response = await fetch(`${BACKEND_URL}/api/execute`, {
           method: 'POST',
           headers: {
@@ -294,16 +302,31 @@ function App() {
           })
         });
         
+        console.log('Backend response status:', response.status); // Debug log
+        
         const result = await response.json();
+        console.log('Backend response data:', result); // Debug log
         
         if (response.ok) {
-          setOutput(result.output || result.result || 'Code executed successfully');
+          let output = result.output || 'Code executed successfully';
+          
+          // Show error if present
+          if (result.error) {
+            output = `Error: ${result.error}`;
+          }
+          
+          console.log('Setting output:', output); // Debug log
+          setOutput(output);
         } else {
-          setOutput(`Error: ${result.error || result.message || 'Unknown error occurred'}`);
+          const errorOutput = `HTTP Error ${response.status}: ${result.error || result.message || 'Unknown error occurred'}`;
+          console.log('API error:', errorOutput); // Debug log
+          setOutput(errorOutput);
         }
       }
     } catch (error) {
-      setOutput(`Error: ${error.message}`);
+      const errorOutput = `Network Error: ${error.message}`;
+      console.log('Network error:', errorOutput); // Debug log
+      setOutput(errorOutput);
     }
     
     setIsLoading(false);
