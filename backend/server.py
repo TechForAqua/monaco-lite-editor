@@ -38,6 +38,28 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+class CodeExecutionRequest(BaseModel):
+    code: str
+    language: str = "python"
+
+class CodeExecutionResponse(BaseModel):
+    output: str
+    error: Optional[str] = None
+    execution_time: Optional[float] = None
+
+# Daytona client initialization
+DAYTONA_API_KEY = os.getenv('DAYTONA_API_KEY')
+if not DAYTONA_API_KEY:
+    logging.warning("DAYTONA_API_KEY not found in environment variables")
+    daytona_client = None
+else:
+    try:
+        daytona_client = Daytona(api_key=DAYTONA_API_KEY)
+        logging.info("Daytona client initialized successfully")
+    except Exception as e:
+        logging.error(f"Failed to initialize Daytona client: {e}")
+        daytona_client = None
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
