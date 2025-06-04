@@ -1,38 +1,372 @@
-.App {
-    text-align: center;
+.app {
+  height: 100vh;
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* Title Bar */
+.title-bar {
+  height: 30px;
+  background-color: #323233;
+  border-bottom: 1px solid #2d2d30;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  user-select: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+.title-bar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
+.app-title {
+  font-size: 13px;
+  color: #cccccc;
+}
+
+.title-bar-actions {
+  color: #cccccc;
+  cursor: pointer;
+}
+
+/* Main Content */
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #252526;
+  border-right: 1px solid #2d2d30;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  max-width: 500px;
+}
+
+.file-tree {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.file-tree-header {
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2d2d30;
+  border-bottom: 1px solid #3e3e42;
+}
+
+.file-tree-title {
+  font-size: 11px;
+  font-weight: bold;
+  color: #cccccc;
+  letter-spacing: 0.5px;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  color: #cccccc;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-button:hover {
+  background-color: #3e3e42;
+}
+
+.file-tree-content {
+  padding: 8px 0;
+}
+
+.folder-header {
+  display: flex;
+  align-items: center;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  gap: 6px;
+  color: #cccccc;
+}
+
+.folder-header:hover {
+  background-color: #2a2d2e;
+}
+
+.file-list {
+  margin-left: 16px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 3px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  gap: 8px;
+  position: relative;
+  color: #cccccc;
+}
+
+.file-item:hover {
+  background-color: #2a2d2e;
+}
+
+.file-item.active {
+  background-color: #094771;
+  color: #ffffff;
+}
+
+.file-icon {
+  font-size: 12px;
+}
+
+.file-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  color: #cccccc;
+  cursor: pointer;
+  padding: 1px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.file-item:hover .delete-button {
+  opacity: 1;
+}
+
+.delete-button:hover {
+  color: #f48771;
+}
+
+.new-file-input {
+  padding: 3px 12px;
+  margin-left: 24px;
+}
+
+.new-file-input input {
+  width: 100%;
+  background-color: #3c3c3c;
+  border: 1px solid #007acc;
+  color: #cccccc;
+  padding: 2px 6px;
+  font-size: 13px;
+  border-radius: 2px;
+}
+
+.new-file-input input:focus {
+  outline: none;
+  border-color: #007acc;
+}
+
+/* Resizer */
+.resizer {
+  width: 4px;
+  background-color: #2d2d30;
+  cursor: col-resize;
+  position: relative;
+}
+
+.resizer:hover {
+  background-color: #007acc;
+}
+
+/* Editor Area */
+.editor-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #1e1e1e;
+}
+
+/* Tab Bar */
+.tab-bar {
+  background-color: #2d2d30;
+  border-bottom: 1px solid #3e3e42;
+  display: flex;
+  align-items: center;
+  min-height: 35px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  background-color: #2d2d30;
+  border-right: 1px solid #3e3e42;
+  cursor: pointer;
+  color: #cccccc;
+}
+
+.tab.active {
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #1e1e1e;
+  color: #ffffff;
+}
+
+.tab:hover:not(.active) {
+  background-color: #3e3e42;
+}
+
+/* Editor Container */
+.editor-container {
+  flex: 1;
+  background-color: #1e1e1e;
+  position: relative;
+}
+
+/* Action Bar */
+.action-bar {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #252526;
+  border-top: 1px solid #3e3e42;
+  border-bottom: 1px solid #3e3e42;
+}
+
+.run-button, .save-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: #0e639c;
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.2s;
+}
+
+.run-button:hover {
+  background-color: #1177bb;
+}
+
+.run-button:disabled {
+  background-color: #3e3e42;
+  cursor: not-allowed;
+}
+
+.save-button {
+  background-color: #5a5a5a;
+}
+
+.save-button:hover {
+  background-color: #6e6e6e;
+}
+
+/* Output Panel */
+.output-panel {
+  height: 200px;
+  background-color: #1e1e1e;
+  border-top: 1px solid #3e3e42;
+  display: flex;
+  flex-direction: column;
+}
+
+.output-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background-color: #252526;
+  font-size: 13px;
+  color: #cccccc;
+  border-bottom: 1px solid #3e3e42;
+}
+
+.output-content {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.output-text {
+  margin: 0;
+  color: #cccccc;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.loading {
+  color: #ffd700;
+  font-style: italic;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4f4f4f;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.loading {
+  animation: pulse 1.5s infinite;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .sidebar {
+    position: absolute;
+    left: 0;
+    top: 30px;
+    bottom: 0;
+    z-index: 100;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .main-content {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
-}
-
-.App-link {
-    color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+  }
+  
+  .output-panel {
+    height: 150px;
+  }
 }
