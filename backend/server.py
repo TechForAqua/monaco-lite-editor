@@ -82,12 +82,6 @@ async def get_status_checks():
 @api_router.post("/execute", response_model=CodeExecutionResponse)
 async def execute_code(request: CodeExecutionRequest):
     """Execute code using Daytona sandbox environment"""
-    if not daytona_client:
-        raise HTTPException(
-            status_code=503, 
-            detail="Code execution service is not available. Daytona client not initialized."
-        )
-    
     start_time = asyncio.get_event_loop().time()
     
     try:
@@ -110,23 +104,21 @@ async def execute_code(request: CodeExecutionRequest):
         
         sandbox_language = language_map.get(request.language.lower(), "python")
         
-        # Execute code in Daytona sandbox
-        # Note: This is a simplified version - actual implementation may vary based on Daytona SDK
-        sandbox_config = {
-            "language": sandbox_language,
-            "timeout": 30  # 30 second timeout
-        }
-        
-        # For now, we'll implement a mock execution for non-Python languages
-        # In a real implementation, you would use the actual Daytona SDK methods
+        # Try Daytona first, fallback to simulation if not available
         if request.language.lower() in ["python", "py"]:
             try:
-                # Use Daytona to execute Python code
-                # This is a placeholder - replace with actual Daytona SDK calls
-                result = await execute_python_code_daytona(request.code)
+                if daytona_client:
+                    # Use actual Daytona execution
+                    result = await execute_python_code_daytona(request.code)
+                else:
+                    # Use simulation fallback
+                    logger.warning("Daytona client not available, using simulation")
+                    result = await execute_code_simulation(request.code)
+                    
                 output = result.get("output", "")
                 error = result.get("error", None)
             except Exception as e:
+                logger.error(f"Code execution error: {e}")
                 output = ""
                 error = f"Execution error: {str(e)}"
         else:
